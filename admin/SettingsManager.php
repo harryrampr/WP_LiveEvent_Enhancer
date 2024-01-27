@@ -17,14 +17,14 @@ class SettingsManager {
 
 		add_settings_section(
 			'wp-liveevent-enhancer-schedule-section',
-			'Streaming Schedule',
+			'Streaming Schedule Settings',
 			array( $this, 'schedule_section_callback' ),
 			'wp-liveevent-enhancer'
 		);
 
 		add_settings_field(
 			'default_time_zone_field',
-			'Default Time Zone',
+			'<label for="default_time_zone">Default Time Zone</label>',
 			array( $this, 'default_time_zone_field_callback' ),
 			'wp-liveevent-enhancer',
 			'wp-liveevent-enhancer-schedule-section'
@@ -32,42 +32,22 @@ class SettingsManager {
 
 		add_settings_section(
 			'wp-liveevent-enhancer-buttons-section',
-			'Buttons',
+			'Buttons Settings',
 			array( $this, 'buttons_section_callback' ),
 			'wp-liveevent-enhancer'
 		);
 
 		add_settings_field(
 			'live_button_html_field',
-			'Live Button HTML',
+			'<label for="live_button_html">Live Button HTML</label>',
 			array( $this, 'live_button_html_field_callback' ),
 			'wp-liveevent-enhancer',
 			'wp-liveevent-enhancer-buttons-section'
 		);
 	}
 
-	public function settings_page_html(): void {
-		if ( ! current_user_can( 'manage_options' ) ) {
-			return;
-		}
-		?>
-        <div class="wrap">
-            <h1><?php esc_html( get_admin_page_title() ); ?></h1>
-            <!--suppress HtmlUnknownTarget -->
-            <form action="options.php" method="post">
-				<?php
-				settings_fields( 'wp-liveevent-enhancer-group' );
-				do_settings_sections( 'wp-liveevent-enhancer' );
-				wp_nonce_field( 'wp_liveevent_enhancer_settings_action', 'wp_liveevent_enhancer_settings_nonce' );
-				submit_button( 'Save Settings' );
-				?>
-            </form>
-        </div>
-		<?php
-	}
-
 	public function schedule_section_callback(): void {
-		echo '<p>Settings for Streaming Schedule.</p>';
+		// echo '<p>Settings for Streaming Schedule.</p>';
 	}
 
 	public function default_time_zone_field_callback(): void {
@@ -83,15 +63,12 @@ class SettingsManager {
 			}
 		}
 
-		?>
-        <label for="default_time_zone">Default Time Zone</label>
-        <input type="text" id="default_time_zone" name="default_time_zone"
-               value="<?php echo isset( $setting ) ? esc_attr( $setting ) : ''; ?>">
-		<?php
+		echo '<input type="text" id="default_time_zone" name="default_time_zone"
+               value="' . ( isset( $setting ) ? esc_attr( $setting ) : '' ) . '" class="regular-text">';
 	}
 
 	public function buttons_section_callback(): void {
-		echo '<p>Settings for buttons.</p>';
+		// echo '<p>Settings for buttons.</p>';
 	}
 
 	public function live_button_html_field_callback(): void {
@@ -102,10 +79,7 @@ class SettingsManager {
 			$setting = '<button class="live-event-button">Live</button>';
 		}
 
-		?>
-        <label for="live_button_html">Live Button HTML</label>
-        <textarea id="live_button_html" name="live_button_html" rows="5"
-                  cols="50"><?php echo isset( $setting ) ? esc_attr( $setting ) : ''; ?></textarea>
-		<?php
+		echo '<textarea id="live_button_html" name="live_button_html" rows="5"
+                  cols="50" class="regular-text">' . ( isset( $setting ) ? esc_attr( $setting ) : '' ) . '</textarea>';
 	}
 }
