@@ -1,0 +1,22 @@
+{
+    "name": "hrpdev/wp-liveevent-enhancer",
+    "description": "A WP Plugin to enhance live stream experience",
+    "type": "wordpress-plugin",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "HRPDEV\\WpLiveEventEnhancer\\": "classes/",
+            "HRPDEV\\WpLiveEventEnhancer\\Admin\\": "admin/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Harry Ramirez",
+            "email": "harryrampr@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "php": ">=8.1"
+    }
+}
