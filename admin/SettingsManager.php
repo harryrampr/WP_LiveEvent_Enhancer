@@ -1,12 +1,10 @@
 <?php declare( strict_types=1 );
 
-namespace HRPDEV\WpLiveEventEnhancer;
+namespace HRPDEV\WpLiveEventEnhancer\Admin;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit;
 
-// File: settings-manager.php
-namespace HRPDEV\WpLiveEventEnhancer;
 
 class SettingsManager {
 	public function register_settings(): void {

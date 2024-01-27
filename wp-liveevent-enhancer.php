@@ -4,7 +4,7 @@ namespace HRPDEV\WpLiveEventEnhancer;
 
 /**
  * Plugin Name: WP LiveEvent Enhancer
- * Plugin URI:  https://yourwebsite.com
+ * Plugin URI:  https://github.com/harryrampr/WP_LiveEvent_Enhancer
  * Description: Enhances live-streaming events with streaming schedules, live-buttons, and more.
  * Version:     1.0
  * Author:      Harry Ramirez
