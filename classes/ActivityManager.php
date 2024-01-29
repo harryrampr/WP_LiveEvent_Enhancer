@@ -98,7 +98,7 @@ class ActivityManager {
 						'label'        => 'Short Description',
 						'name'         => 'activity_short_description',
 						'type'         => 'text',
-						'instructions' => 'Enter activity short description (up to 200 characters).',
+						'instructions' => 'Enter the activity short description (up to 200 characters).',
 						'required'     => 1,
 						'maxlength'    => 200,
 					),
@@ -107,7 +107,7 @@ class ActivityManager {
 						'label'         => 'Frequency',
 						'name'          => 'activity_frequency',
 						'type'          => 'select',
-						'instructions'  => 'Select the frequency of the activity.',
+						'instructions'  => 'Select the activity frequency.',
 						'required'      => 1,
 						'choices'       => array(
 							'daily'    => 'Daily',
@@ -126,9 +126,9 @@ class ActivityManager {
 					array(
 						'key'               => 'field_500',
 						'label'             => 'Date',
-						'name'              => 'activity_dates',
+						'name'              => 'activity_date',
 						'type'              => 'date_picker',
-						'instructions'      => 'Select the date of the activity.',
+						'instructions'      => 'Select the activity date.',
 						'required'          => 1,
 						'conditional_logic' => array(
 							array(
@@ -141,11 +141,11 @@ class ActivityManager {
 						),
 					),
 					array(
-						'key'               => 'field_540',
-						'label'             => 'Day',
-						'name'              => 'activity_day_of_the_week',
+						'key'               => 'field_560',
+						'label'             => 'Days',
+						'name'              => 'activity_days_week',
 						'type'              => 'select',
-						'instructions'      => 'Select the activity day or days.',
+						'instructions'      => 'Select the activity days, every week.',
 						'required'          => 1,
 						'choices'           => array(
 							'sunday'    => 'Sunday',
@@ -174,183 +174,25 @@ class ActivityManager {
 						),
 					),
 					array(
-						'key'               => 'field_550',
-						'label'             => 'Days',
-						'name'              => 'activity_day_number',
-						'type'              => 'select',
-						'instructions'      => 'Select the activity day, days or None.',
-						'required'          => 0,
-						'choices'           => array(
-							                       'none' => 'None',
-						                       ) + array_combine( range( 1, 31 ), range( 1, 31 ) ),
-						'default_value'     => array( 'none' ),
-						'allow_null'        => 0,
-						'multiple'          => 1,
-						'ui'                => 1,
-						'ajax'              => 0,
-						'return_format'     => 'value',
-						'conditional_logic' => array(
-							array(
-								array(
-									'field'    => 'field_400',
-									'operator' => '==',
-									'value'    => 'monthly',
-								),
-							),
-						),
-					),
-					array(
-						'key'               => 'field_560',
-						'label'             => 'First Week Day',
-						'name'              => 'activity_monthly_first_week_day',
-						'type'              => 'select',
-						'instructions'      => 'Select the activity day or days for first week of each month.',
-						'required'          => 0,
-						'choices'           => array(
-							'none'      => 'None',
-							'sunday'    => 'Sunday',
-							'monday'    => 'Monday',
-							'tuesday'   => 'Tuesday',
-							'wednesday' => 'Wednesday',
-							'thursday'  => 'Thursday',
-							'friday'    => 'Friday',
-							'saturday'  => 'Saturday',
-						),
-						'default_value'     => array( 'none' ),
-						'allow_null'        => 0,
-						'multiple'          => 1,
-						'ui'                => 1,
-						'ajax'              => 0,
-						'return_format'     => 'value',
-						'placeholder'       => '',
-						'conditional_logic' => array(
-							array(
-								array(
-									'field'    => 'field_400',
-									'operator' => '==',
-									'value'    => 'monthly',
-								),
-								array(
-									'field'    => 'field_550',
-									'operator' => '==',
-									'value'    => 'none',
-								),
-							),
-						),
-					),
-					array(
 						'key'               => 'field_570',
-						'label'             => 'Second Week Day',
-						'name'              => 'activity_monthly_second_week_day',
+						'label'             => 'Days',
+						'name'              => 'activity_days_month',
 						'type'              => 'select',
-						'instructions'      => 'Select the activity day or days for second week of each month.',
-						'required'          => 0,
-						'choices'           => array(
-							'none'      => 'None',
-							'sunday'    => 'Sunday',
-							'monday'    => 'Monday',
-							'tuesday'   => 'Tuesday',
-							'wednesday' => 'Wednesday',
-							'thursday'  => 'Thursday',
-							'friday'    => 'Friday',
-							'saturday'  => 'Saturday',
-						),
-						'default_value'     => array( 'none' ),
+						'instructions'      => 'Select the activity days, every month.',
+						'default_value'     => 'last_day',
+						'required'          => 1,
+						'choices'           => $this->generate_monthly_days_array(),
 						'allow_null'        => 0,
 						'multiple'          => 1,
 						'ui'                => 1,
 						'ajax'              => 0,
 						'return_format'     => 'value',
-						'placeholder'       => '',
 						'conditional_logic' => array(
 							array(
 								array(
 									'field'    => 'field_400',
 									'operator' => '==',
 									'value'    => 'monthly',
-								),
-								array(
-									'field'    => 'field_550',
-									'operator' => '==',
-									'value'    => 'none',
-								),
-							),
-						),
-					),
-					array(
-						'key'               => 'field_580',
-						'label'             => 'Third Week Day',
-						'name'              => 'activity_monthly_third_week_day',
-						'type'              => 'select',
-						'instructions'      => 'Select the activity day or days for third week of each month.',
-						'required'          => 0,
-						'choices'           => array(
-							'none'      => 'None',
-							'sunday'    => 'Sunday',
-							'monday'    => 'Monday',
-							'tuesday'   => 'Tuesday',
-							'wednesday' => 'Wednesday',
-							'thursday'  => 'Thursday',
-							'friday'    => 'Friday',
-							'saturday'  => 'Saturday',
-						),
-						'default_value'     => array( 'none' ),
-						'allow_null'        => 0,
-						'multiple'          => 1,
-						'ui'                => 1,
-						'ajax'              => 0,
-						'return_format'     => 'value',
-						'placeholder'       => '',
-						'conditional_logic' => array(
-							array(
-								array(
-									'field'    => 'field_400',
-									'operator' => '==',
-									'value'    => 'monthly',
-								),
-								array(
-									'field'    => 'field_550',
-									'operator' => '==',
-									'value'    => 'none',
-								),
-							),
-						),
-					),
-					array(
-						'key'               => 'field_590',
-						'label'             => 'Fourth Week Day',
-						'name'              => 'activity_monthly_fourth_week_day',
-						'type'              => 'select',
-						'instructions'      => 'Select the activity day or days for fourth week of each month.',
-						'required'          => 0,
-						'choices'           => array(
-							'none'      => 'None',
-							'sunday'    => 'Sunday',
-							'monday'    => 'Monday',
-							'tuesday'   => 'Tuesday',
-							'wednesday' => 'Wednesday',
-							'thursday'  => 'Thursday',
-							'friday'    => 'Friday',
-							'saturday'  => 'Saturday',
-						),
-						'default_value'     => array( 'none' ),
-						'allow_null'        => 0,
-						'multiple'          => 1,
-						'ui'                => 1,
-						'ajax'              => 0,
-						'return_format'     => 'value',
-						'placeholder'       => '',
-						'conditional_logic' => array(
-							array(
-								array(
-									'field'    => 'field_400',
-									'operator' => '==',
-									'value'    => 'monthly',
-								),
-								array(
-									'field'    => 'field_550',
-									'operator' => '==',
-									'value'    => 'none',
 								),
 							),
 						),
@@ -376,7 +218,7 @@ class ActivityManager {
 						'label'        => 'Location',
 						'name'         => 'activity_location',
 						'type'         => 'text',
-						'instructions' => 'Enter activity location if presencial (optional).',
+						'instructions' => 'If presencial, enter activity location. (optional).',
 						'required'     => 0,
 						'placeholder'  => '#10 Wilson St., Santa Clara, CA',
 					),
@@ -385,7 +227,7 @@ class ActivityManager {
 						'label'        => 'Live Stream Viewers URL',
 						'name'         => 'activity_live_stream_viewers_url',
 						'type'         => 'url',
-						'instructions' => 'Enter the URL that viewers should visit for the live stream (optional)',
+						'instructions' => 'Enter the URL you want viewers to visit for the live event (optional)',
 						'required'     => 0,
 						'placeholder'  => 'https://mywebsite.com/livestream',
 					),
@@ -394,10 +236,38 @@ class ActivityManager {
 						'label'        => 'Live Stream Player URL',
 						'name'         => 'activity_live_stream_player_url',
 						'type'         => 'url',
-						'instructions' => 'Enter the URL the player needs to connect to the stream (optional)',
+						'instructions' => 'Enter URL the Player needs to connect to the stream (optional)',
 						'required'     => 0,
 						'placeholder'  => 'https://www.youtube.com/embed/xxxx?si=yyyyy',
-					)
+					),
+					array(
+						'key'               => 'field_1100',
+						'label'             => 'Stream Type',
+						'name'              => 'activity_stream_type',
+						'type'              => 'select',
+						'instructions'      => 'Select the activity type of stream.',
+						'required'          => 1,
+						'choices'           => array(
+							'video' => 'Video',
+							'audio' => 'Audio Only',
+						),
+						'default_value'     => array( 'video' ),
+						'allow_null'        => 0,
+						'multiple'          => 0,
+						'ui'                => 1,
+						'ajax'              => 0,
+						'return_format'     => 'value',
+						'placeholder'       => '',
+						'conditional_logic' => array(
+							array(
+								array(
+									'field'    => 'field_1000',
+									'operator' => '!=',
+									'value'    => '',
+								),
+							),
+						),
+					),
 					// ... Add more fields as needed ...
 				),
 				'location' => array(
@@ -414,6 +284,39 @@ class ActivityManager {
 
 		endif;
 	}
+
+	private function generate_monthly_days_array(): array {
+		$result      = [];
+		$days        = [ "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday" ];
+		$occurrences = [ "first", "second", "third", "fourth", "last" ];
+
+		foreach ( $occurrences as $occurrence ) {
+			foreach ( $days as $day ) {
+				// Construct the key using the occurrence and the day
+				$key = $occurrence . '_' . $day;
+
+				// Capitalize the first letter of each word for the value
+				$formatted_occurrence = ucfirst( $occurrence );
+				$formatted_day        = ucfirst( $day );
+
+				// Combine them to create the value
+				$value = $formatted_occurrence . ' ' . $formatted_day;
+
+				// Add to the result array
+				$result[ $key ] = $value;
+			}
+		}
+
+
+		for ( $i = 1; $i <= 31; $i ++ ) {
+			$result[ 'day_' . $i ] = 'Day ' . $i;
+		}
+
+		$result['last_day'] = 'Last Day';
+
+		return $result;
+	}
+
 
 	// ... Other functions ...
 }
