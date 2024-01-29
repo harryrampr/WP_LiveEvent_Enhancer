@@ -8,8 +8,8 @@ defined( 'ABSPATH' ) || exit;
 class ActivityManager {
 
 	public function init(): void {
-		add_action( 'admin_init', array( $this, 'install_acf_plugin'), 20 );
-		add_action( 'admin_init', array( $this, 'check_acf_activation')  , 30);
+		add_action( 'admin_init', array( $this, 'install_acf_plugin' ), 20 );
+		add_action( 'admin_init', array( $this, 'check_acf_activation' ), 30 );
 		add_action( 'init', array( $this, 'register_activities_post_type' ) );
 		add_action( 'acf/init', array( $this, 'register_acf_fields' ) );
 	}
@@ -33,7 +33,7 @@ class ActivityManager {
 			if ( is_wp_error( $api ) ) {
 				$this->log_plugin_error( $api );
 			} else {
-				$upgrader  = new \Plugin_Upgrader(new \Automatic_Upgrader_Skin() );
+				$upgrader  = new \Plugin_Upgrader( new \Automatic_Upgrader_Skin() );
 				$installed = $upgrader->install( $api->download_link );
 			}
 
@@ -88,6 +88,7 @@ class ActivityManager {
 	public function register_acf_fields(): void {
 		if ( function_exists( 'acf_add_local_field_group' ) ):
 
+			/** @noinspection PhpUndefinedFunctionInspection */
 			acf_add_local_field_group( array(
 				'key'      => 'group_1',
 				'title'    => 'Activity Details',
@@ -106,14 +107,13 @@ class ActivityManager {
 						'label'         => 'Frequency',
 						'name'          => 'activity_frequency',
 						'type'          => 'select',
-						'instructions'  => 'Select the frequency of the activity',
+						'instructions'  => 'Select the frequency of the activity.',
 						'required'      => 1,
 						'choices'       => array(
-							'once'     => 'Once',
 							'daily'    => 'Daily',
 							'weekly'   => 'Weekly',
 							'monthly'  => 'Monthly',
-							'annually' => 'Annually'
+							'specific' => 'Specific Date'
 						),
 						'default_value' => array( 'weekly' ),
 						'allow_null'    => 0,
@@ -126,31 +126,26 @@ class ActivityManager {
 					array(
 						'key'               => 'field_500',
 						'label'             => 'Date',
-						'name'              => 'activity_date',
+						'name'              => 'activity_dates',
 						'type'              => 'date_picker',
+						'instructions'      => 'Select the date of the activity.',
 						'required'          => 1,
 						'conditional_logic' => array(
 							array(
 								array(
 									'field'    => 'field_400',
-									'operator' => '!=',
-									'value'    => 'daily',
-								),
-								array(
-									'field'    => 'field_400',
-									'operator' => '!=',
-									'value'    => 'weekly',
+									'operator' => '==',
+									'value'    => 'specific',
 								),
 							),
 						),
-						'default_value'     => date( 'Y-m-d' ),
 					),
 					array(
-						'key'               => 'field_550',
-						'label'             => 'Day of the Week',
+						'key'               => 'field_540',
+						'label'             => 'Day',
 						'name'              => 'activity_day_of_the_week',
 						'type'              => 'select',
-						'instructions'      => 'Select the day of the week',
+						'instructions'      => 'Select the activity day or days.',
 						'required'          => 1,
 						'choices'           => array(
 							'sunday'    => 'Sunday',
@@ -162,12 +157,200 @@ class ActivityManager {
 							'saturday'  => 'Saturday',
 						),
 						'default_value'     => array( 'sunday' ),
+						'allow_null'        => 0,
+						'multiple'          => 1,
+						'ui'                => 1,
+						'ajax'              => 0,
+						'return_format'     => 'value',
+						'placeholder'       => '',
 						'conditional_logic' => array(
 							array(
 								array(
 									'field'    => 'field_400',
 									'operator' => '==',
 									'value'    => 'weekly',
+								),
+							),
+						),
+					),
+					array(
+						'key'               => 'field_550',
+						'label'             => 'Days',
+						'name'              => 'activity_day_number',
+						'type'              => 'select',
+						'instructions'      => 'Select the activity day, days or None.',
+						'required'          => 0,
+						'choices'           => array(
+							                       'none' => 'None',
+						                       ) + array_combine( range( 1, 31 ), range( 1, 31 ) ),
+						'default_value'     => array( 'none' ),
+						'allow_null'        => 0,
+						'multiple'          => 1,
+						'ui'                => 1,
+						'ajax'              => 0,
+						'return_format'     => 'value',
+						'conditional_logic' => array(
+							array(
+								array(
+									'field'    => 'field_400',
+									'operator' => '==',
+									'value'    => 'monthly',
+								),
+							),
+						),
+					),
+					array(
+						'key'               => 'field_560',
+						'label'             => 'First Week Day',
+						'name'              => 'activity_monthly_first_week_day',
+						'type'              => 'select',
+						'instructions'      => 'Select the activity day or days for first week of each month.',
+						'required'          => 0,
+						'choices'           => array(
+							'none'      => 'None',
+							'sunday'    => 'Sunday',
+							'monday'    => 'Monday',
+							'tuesday'   => 'Tuesday',
+							'wednesday' => 'Wednesday',
+							'thursday'  => 'Thursday',
+							'friday'    => 'Friday',
+							'saturday'  => 'Saturday',
+						),
+						'default_value'     => array( 'none' ),
+						'allow_null'        => 0,
+						'multiple'          => 1,
+						'ui'                => 1,
+						'ajax'              => 0,
+						'return_format'     => 'value',
+						'placeholder'       => '',
+						'conditional_logic' => array(
+							array(
+								array(
+									'field'    => 'field_400',
+									'operator' => '==',
+									'value'    => 'monthly',
+								),
+								array(
+									'field'    => 'field_550',
+									'operator' => '==',
+									'value'    => 'none',
+								),
+							),
+						),
+					),
+					array(
+						'key'               => 'field_570',
+						'label'             => 'Second Week Day',
+						'name'              => 'activity_monthly_second_week_day',
+						'type'              => 'select',
+						'instructions'      => 'Select the activity day or days for second week of each month.',
+						'required'          => 0,
+						'choices'           => array(
+							'none'      => 'None',
+							'sunday'    => 'Sunday',
+							'monday'    => 'Monday',
+							'tuesday'   => 'Tuesday',
+							'wednesday' => 'Wednesday',
+							'thursday'  => 'Thursday',
+							'friday'    => 'Friday',
+							'saturday'  => 'Saturday',
+						),
+						'default_value'     => array( 'none' ),
+						'allow_null'        => 0,
+						'multiple'          => 1,
+						'ui'                => 1,
+						'ajax'              => 0,
+						'return_format'     => 'value',
+						'placeholder'       => '',
+						'conditional_logic' => array(
+							array(
+								array(
+									'field'    => 'field_400',
+									'operator' => '==',
+									'value'    => 'monthly',
+								),
+								array(
+									'field'    => 'field_550',
+									'operator' => '==',
+									'value'    => 'none',
+								),
+							),
+						),
+					),
+					array(
+						'key'               => 'field_580',
+						'label'             => 'Third Week Day',
+						'name'              => 'activity_monthly_third_week_day',
+						'type'              => 'select',
+						'instructions'      => 'Select the activity day or days for third week of each month.',
+						'required'          => 0,
+						'choices'           => array(
+							'none'      => 'None',
+							'sunday'    => 'Sunday',
+							'monday'    => 'Monday',
+							'tuesday'   => 'Tuesday',
+							'wednesday' => 'Wednesday',
+							'thursday'  => 'Thursday',
+							'friday'    => 'Friday',
+							'saturday'  => 'Saturday',
+						),
+						'default_value'     => array( 'none' ),
+						'allow_null'        => 0,
+						'multiple'          => 1,
+						'ui'                => 1,
+						'ajax'              => 0,
+						'return_format'     => 'value',
+						'placeholder'       => '',
+						'conditional_logic' => array(
+							array(
+								array(
+									'field'    => 'field_400',
+									'operator' => '==',
+									'value'    => 'monthly',
+								),
+								array(
+									'field'    => 'field_550',
+									'operator' => '==',
+									'value'    => 'none',
+								),
+							),
+						),
+					),
+					array(
+						'key'               => 'field_590',
+						'label'             => 'Fourth Week Day',
+						'name'              => 'activity_monthly_fourth_week_day',
+						'type'              => 'select',
+						'instructions'      => 'Select the activity day or days for fourth week of each month.',
+						'required'          => 0,
+						'choices'           => array(
+							'none'      => 'None',
+							'sunday'    => 'Sunday',
+							'monday'    => 'Monday',
+							'tuesday'   => 'Tuesday',
+							'wednesday' => 'Wednesday',
+							'thursday'  => 'Thursday',
+							'friday'    => 'Friday',
+							'saturday'  => 'Saturday',
+						),
+						'default_value'     => array( 'none' ),
+						'allow_null'        => 0,
+						'multiple'          => 1,
+						'ui'                => 1,
+						'ajax'              => 0,
+						'return_format'     => 'value',
+						'placeholder'       => '',
+						'conditional_logic' => array(
+							array(
+								array(
+									'field'    => 'field_400',
+									'operator' => '==',
+									'value'    => 'monthly',
+								),
+								array(
+									'field'    => 'field_550',
+									'operator' => '==',
+									'value'    => 'none',
 								),
 							),
 						),
