@@ -7,6 +7,10 @@ defined( 'ABSPATH' ) || exit;
 
 
 class SettingsManager {
+
+	public function init():void {
+		add_action( 'admin_init', array( $this, 'register_settings' ) );
+	}
 	public function register_settings(): void {
 		// Logic for registering settings and fields
 		register_setting( 'wp-liveevent-enhancer-group', 'default_time_zone', 'sanitize_text_field' );
@@ -63,8 +67,15 @@ class SettingsManager {
 			}
 		}
 
-		echo '<input type="text" id="default_time_zone" name="default_time_zone"
-               value="' . ( isset( $setting ) ? esc_attr( $setting ) : '' ) . '" class="regular-text">';
+		$timezones = timezone_identifiers_list();
+		echo '<select id="default_time_zone" name="default_time_zone" class="regular-text">' . PHP_EOL;
+		foreach ( $timezones as $timezone ) {
+			// Set the 'selected' attribute for the current time zone
+			$selected = ( $timezone === $setting ) ? 'selected' : '';
+
+			echo '<option value="' . $timezone . '" ' . $selected . '>' . $timezone . '</option>' . PHP_EOL;
+		}
+		echo '</select>' . PHP_EOL;
 	}
 
 	public function buttons_section_callback(): void {
