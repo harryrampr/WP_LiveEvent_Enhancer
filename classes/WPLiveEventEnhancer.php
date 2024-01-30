@@ -12,13 +12,13 @@ class WPLiveEventEnhancer {
 
 	private AdminMenuManager $admin_menu_manager;
 	private SettingsManager $settings_manager;
-	private ActivityManager $activity_manager;
+	private LiveEventsManager $live_events_manager;
 	private ScheduleManager $schedule_manager;
 
 	public function __construct() {
 		$this->admin_menu_manager = new AdminMenuManager();
 		$this->settings_manager   = new SettingsManager();
-		$this->activity_manager    = new ActivityManager();
+		$this->live_events_manager    = new LiveEventsManager();
 		$this->schedule_manager   = new ScheduleManager();
 
 		register_activation_hook( WP_LIVEEVENT_ENHANCER_FILE, array( $this, 'activate' ) );
@@ -38,7 +38,7 @@ class WPLiveEventEnhancer {
 	public function run(): void {
 		$this->admin_menu_manager->init();
 		$this->settings_manager->init();
-		$this->activity_manager->init();
+		$this->live_events_manager->init();
 		$this->schedule_manager->init();
 	}
 

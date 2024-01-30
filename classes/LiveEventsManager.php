@@ -5,12 +5,12 @@ namespace HRPDEV\WpLiveEventEnhancer;
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit;
 
-class ActivityManager {
+class LiveEventsManager {
 
 	public function init(): void {
 		add_action( 'admin_init', array( $this, 'install_acf_plugin' ), 20 );
 		add_action( 'admin_init', array( $this, 'check_acf_activation' ), 30 );
-		add_action( 'init', array( $this, 'register_activities_post_type' ) );
+		add_action( 'init', array( $this, 'register_live_events_post_type' ) );
 		add_action( 'acf/init', array( $this, 'register_acf_fields' ) );
 	}
 
@@ -75,14 +75,14 @@ class ActivityManager {
 		}
 	}
 
-	public function register_activities_post_type(): void {
+	public function register_live_events_post_type(): void {
 		$args = array(
 			'public'   => true,
-			'label'    => 'Activities',
+			'label'    => 'LiveEvents',
 			'supports' => array( 'title', 'editor', 'custom-fields' )
 		);
 
-		register_post_type( 'activities', $args );
+		register_post_type( 'wplee-live-event', $args );
 	}
 
 	public function register_acf_fields(): void {
@@ -91,23 +91,23 @@ class ActivityManager {
 			/** @noinspection PhpUndefinedFunctionInspection */
 			acf_add_local_field_group( array(
 				'key'      => 'group_1',
-				'title'    => 'Activity Details',
+				'title'    => 'Live Event Details',
 				'fields'   => array(
 					array(
 						'key'          => 'field_300',
 						'label'        => 'Short Description',
-						'name'         => 'activity_short_description',
+						'name'         => 'event_short_description',
 						'type'         => 'text',
-						'instructions' => 'Enter the activity short description (up to 200 characters).',
+						'instructions' => 'Enter the event short description (up to 200 characters).',
 						'required'     => 1,
 						'maxlength'    => 200,
 					),
 					array(
 						'key'           => 'field_400',
 						'label'         => 'Frequency',
-						'name'          => 'activity_frequency',
+						'name'          => 'event_frequency',
 						'type'          => 'select',
-						'instructions'  => 'Select the activity frequency.',
+						'instructions'  => 'Select the event frequency.',
 						'required'      => 1,
 						'choices'       => array(
 							'daily'    => 'Daily',
@@ -126,9 +126,9 @@ class ActivityManager {
 					array(
 						'key'               => 'field_500',
 						'label'             => 'Date',
-						'name'              => 'activity_date',
+						'name'              => 'event_date',
 						'type'              => 'date_picker',
-						'instructions'      => 'Select the activity date.',
+						'instructions'      => 'Select the event date.',
 						'required'          => 1,
 						'conditional_logic' => array(
 							array(
@@ -143,9 +143,9 @@ class ActivityManager {
 					array(
 						'key'               => 'field_560',
 						'label'             => 'Days',
-						'name'              => 'activity_days_week',
+						'name'              => 'event_days_week',
 						'type'              => 'select',
-						'instructions'      => 'Select the activity days, every week.',
+						'instructions'      => 'Select the event days, every week.',
 						'required'          => 1,
 						'choices'           => array(
 							'sunday'    => 'Sunday',
@@ -176,9 +176,9 @@ class ActivityManager {
 					array(
 						'key'               => 'field_570',
 						'label'             => 'Days',
-						'name'              => 'activity_days_month',
+						'name'              => 'event_days_month',
 						'type'              => 'select',
-						'instructions'      => 'Select the activity days, every month.',
+						'instructions'      => 'Select the event days, every month.',
 						'default_value'     => 'last_day',
 						'required'          => 1,
 						'choices'           => $this->generate_monthly_days_array(),
@@ -200,7 +200,7 @@ class ActivityManager {
 					array(
 						'key'           => 'field_600',
 						'label'         => 'Start Time',
-						'name'          => 'activity_start_time',
+						'name'          => 'event_start_time',
 						'type'          => 'time_picker',
 						'required'      => 1,
 						'default_value' => '06:00',
@@ -208,7 +208,7 @@ class ActivityManager {
 					array(
 						'key'           => 'field_700',
 						'label'         => 'End Time',
-						'name'          => 'activity_end_time',
+						'name'          => 'event_end_time',
 						'type'          => 'time_picker',
 						'required'      => 1,
 						'default_value' => '23:00',
@@ -216,36 +216,36 @@ class ActivityManager {
 					array(
 						'key'          => 'field_800',
 						'label'        => 'Location',
-						'name'         => 'activity_location',
+						'name'         => 'event_location',
 						'type'         => 'text',
-						'instructions' => 'If presencial, enter activity location. (optional).',
+						'instructions' => 'If presencial assistance is an option, enter the event location. (optional).',
 						'required'     => 0,
 						'placeholder'  => '#10 Wilson St., Santa Clara, CA',
 					),
 					array(
 						'key'          => 'field_900',
 						'label'        => 'Live Stream Viewers URL',
-						'name'         => 'activity_live_stream_viewers_url',
+						'name'         => 'event_live_stream_viewers_url',
 						'type'         => 'url',
-						'instructions' => 'Enter the URL you want viewers to visit for the live event (optional)',
+						'instructions' => 'Enter the URL you want viewers to visit for the live event (optional).',
 						'required'     => 0,
 						'placeholder'  => 'https://mywebsite.com/livestream',
 					),
 					array(
 						'key'          => 'field_1000',
 						'label'        => 'Live Stream Player URL',
-						'name'         => 'activity_live_stream_player_url',
+						'name'         => 'event_live_stream_player_url',
 						'type'         => 'url',
-						'instructions' => 'Enter URL the Player needs to connect to the stream (optional)',
+						'instructions' => 'Enter URL the Player needs to connect to the stream (optional). You may add/update this URL at seconds from event start time.',
 						'required'     => 0,
 						'placeholder'  => 'https://www.youtube.com/embed/xxxx?si=yyyyy',
 					),
 					array(
 						'key'               => 'field_1100',
 						'label'             => 'Stream Type',
-						'name'              => 'activity_stream_type',
+						'name'              => 'event_stream_type',
 						'type'              => 'select',
-						'instructions'      => 'Select the activity type of stream.',
+						'instructions'      => 'Select the event\'s type of stream.',
 						'required'          => 1,
 						'choices'           => array(
 							'video' => 'Video',
@@ -275,7 +275,7 @@ class ActivityManager {
 						array(
 							'param'    => 'post_type',
 							'operator' => '==',
-							'value'    => 'activities',
+							'value'    => 'wplee-live-event',
 						),
 					),
 				),
