@@ -10,8 +10,8 @@ class LiveEventsManager {
 	public function init(): void {
 		add_action( 'admin_init', array( $this, 'install_acf_plugin' ), 20 );
 		add_action( 'admin_init', array( $this, 'check_acf_activation' ), 30 );
-		add_action( 'init', array( $this, 'register_live_events_post_type' ) );
-		add_action( 'acf/init', array( $this, 'register_acf_fields' ) );
+		add_action( 'init', array( $this, 'register_live_events_post_type' ), 10 );
+		add_action( 'acf/init', array( $this, 'register_acf_fields' ), 10 );
 	}
 
 
@@ -90,11 +90,11 @@ class LiveEventsManager {
 
 			/** @noinspection PhpUndefinedFunctionInspection */
 			acf_add_local_field_group( array(
-				'key'      => 'group_1',
+				'key'      => 'live_event_group_1',
 				'title'    => 'Live Event Details',
 				'fields'   => array(
 					array(
-						'key'          => 'field_300',
+						'key'          => 'field_100',
 						'label'        => 'Short Description',
 						'name'         => 'event_short_description',
 						'type'         => 'text',
@@ -103,102 +103,15 @@ class LiveEventsManager {
 						'maxlength'    => 200,
 					),
 					array(
-						'key'           => 'field_400',
-						'label'         => 'Frequency',
-						'name'          => 'event_frequency',
-						'type'          => 'select',
-						'instructions'  => 'Select the event frequency.',
-						'required'      => 1,
-						'choices'       => array(
-							'daily'    => 'Daily',
-							'weekly'   => 'Weekly',
-							'monthly'  => 'Monthly',
-							'specific' => 'Specific Date'
-						),
-						'default_value' => array( 'weekly' ),
-						'allow_null'    => 0,
-						'multiple'      => 0,
-						'ui'            => 1,
-						'ajax'          => 0,
-						'return_format' => 'value',
-						'placeholder'   => '',
-					),
-					array(
-						'key'               => 'field_500',
+						'key'               => 'field_200',
 						'label'             => 'Date',
 						'name'              => 'event_date',
 						'type'              => 'date_picker',
 						'instructions'      => 'Select the event date.',
 						'required'          => 1,
-						'conditional_logic' => array(
-							array(
-								array(
-									'field'    => 'field_400',
-									'operator' => '==',
-									'value'    => 'specific',
-								),
-							),
-						),
 					),
 					array(
-						'key'               => 'field_560',
-						'label'             => 'Days',
-						'name'              => 'event_days_week',
-						'type'              => 'select',
-						'instructions'      => 'Select the event days, every week.',
-						'required'          => 1,
-						'choices'           => array(
-							'sunday'    => 'Sunday',
-							'monday'    => 'Monday',
-							'tuesday'   => 'Tuesday',
-							'wednesday' => 'Wednesday',
-							'thursday'  => 'Thursday',
-							'friday'    => 'Friday',
-							'saturday'  => 'Saturday',
-						),
-						'default_value'     => array( 'sunday' ),
-						'allow_null'        => 0,
-						'multiple'          => 1,
-						'ui'                => 1,
-						'ajax'              => 0,
-						'return_format'     => 'value',
-						'placeholder'       => '',
-						'conditional_logic' => array(
-							array(
-								array(
-									'field'    => 'field_400',
-									'operator' => '==',
-									'value'    => 'weekly',
-								),
-							),
-						),
-					),
-					array(
-						'key'               => 'field_570',
-						'label'             => 'Days',
-						'name'              => 'event_days_month',
-						'type'              => 'select',
-						'instructions'      => 'Select the event days, every month.',
-						'default_value'     => 'last_day',
-						'required'          => 1,
-						'choices'           => $this->generate_monthly_days_array(),
-						'allow_null'        => 0,
-						'multiple'          => 1,
-						'ui'                => 1,
-						'ajax'              => 0,
-						'return_format'     => 'value',
-						'conditional_logic' => array(
-							array(
-								array(
-									'field'    => 'field_400',
-									'operator' => '==',
-									'value'    => 'monthly',
-								),
-							),
-						),
-					),
-					array(
-						'key'           => 'field_600',
+						'key'           => 'field_300',
 						'label'         => 'Start Time',
 						'name'          => 'event_start_time',
 						'type'          => 'time_picker',
@@ -206,7 +119,7 @@ class LiveEventsManager {
 						'default_value' => '06:00',
 					),
 					array(
-						'key'           => 'field_700',
+						'key'           => 'field_400',
 						'label'         => 'End Time',
 						'name'          => 'event_end_time',
 						'type'          => 'time_picker',
@@ -214,22 +127,13 @@ class LiveEventsManager {
 						'default_value' => '23:00',
 					),
 					array(
-						'key'          => 'field_800',
+						'key'          => 'field_500',
 						'label'        => 'Location',
 						'name'         => 'event_location',
 						'type'         => 'text',
 						'instructions' => 'If presencial assistance is an option, enter the event location. (optional).',
 						'required'     => 0,
 						'placeholder'  => '#10 Wilson St., Santa Clara, CA',
-					),
-					array(
-						'key'          => 'field_900',
-						'label'        => 'Live Stream Viewers URL',
-						'name'         => 'event_live_stream_viewers_url',
-						'type'         => 'url',
-						'instructions' => 'Enter the URL you want viewers to visit for the live event (optional).',
-						'required'     => 0,
-						'placeholder'  => 'https://mywebsite.com/livestream',
 					),
 					array(
 						'key'          => 'field_1000',
@@ -284,39 +188,6 @@ class LiveEventsManager {
 
 		endif;
 	}
-
-	private function generate_monthly_days_array(): array {
-		$result      = [];
-		$days        = [ "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday" ];
-		$occurrences = [ "first", "second", "third", "fourth", "last" ];
-
-		foreach ( $occurrences as $occurrence ) {
-			foreach ( $days as $day ) {
-				// Construct the key using the occurrence and the day
-				$key = $occurrence . '_' . $day;
-
-				// Capitalize the first letter of each word for the value
-				$formatted_occurrence = ucfirst( $occurrence );
-				$formatted_day        = ucfirst( $day );
-
-				// Combine them to create the value
-				$value = $formatted_occurrence . ' ' . $formatted_day;
-
-				// Add to the result array
-				$result[ $key ] = $value;
-			}
-		}
-
-
-		for ( $i = 1; $i <= 31; $i ++ ) {
-			$result[ 'day_' . $i ] = 'Day ' . $i;
-		}
-
-		$result['last_day'] = 'Last Day';
-
-		return $result;
-	}
-
 
 	// ... Other functions ...
 }
