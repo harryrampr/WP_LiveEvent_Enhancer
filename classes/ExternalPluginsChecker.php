@@ -19,6 +19,7 @@ class ExternalPluginsChecker {
 		add_action( 'admin_init', array( $this, 'check_plugin_activation' ), 30 );
 	}
 
+	/** @noinspection PhpFullyQualifiedNameUsageInspection */
 	public function install_plugin(): void {
 		if ( ! is_plugin_active( ltrim( $this->main_file_path, '/' ) ) && ! file_exists( WP_PLUGIN_DIR . $this->main_file_path ) ) {
 			include_once ABSPATH . 'wp-admin/includes/plugin-install.php';
@@ -67,7 +68,7 @@ class ExternalPluginsChecker {
 	public function check_plugin_activation(): void {
 		if ( file_exists( WP_PLUGIN_DIR . $this->main_file_path ) && ! is_plugin_active( ltrim( $this->main_file_path, '/' ) ) ) {
 
-			$activated = activate_plugin( 'advanced-custom-fields/acf.php' );
+			$activated = activate_plugin( ltrim( $this->main_file_path, '/' )  );
 
 			if ( is_wp_error( $activated ) ) {
 				add_action( 'admin_notices', array( $this, 'failed_activation_admin_notice__error' ) );
