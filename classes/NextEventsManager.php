@@ -7,9 +7,17 @@ defined( 'ABSPATH' ) || exit;
 
 class NextEventsManager {
 
+	private ExternalPluginsChecker $external_plugin_checker;
+
+	public function __construct() {
+		$this->external_plugin_checker = new ExternalPluginsChecker( 'Advanced Custom Fields', 'advanced-custom-fields',
+			'advanced-custom-fields', 'acf.php' );
+	}
+
 	public function init(): void {
-		add_action( 'admin_init', array( $this, 'install_acf_plugin' ), 20 );
-		add_action( 'admin_init', array( $this, 'check_acf_activation' ), 30 );
+		$this->external_plugin_checker->init();
+//		add_action( 'admin_init', array( $this, 'install_acf_plugin' ), 20 );
+//		add_action( 'admin_init', array( $this, 'check_acf_activation' ), 30 );
 		add_action( 'init', array( $this, 'register_next_events_post_type' ), 10 );
 		add_action( 'acf/init', array( $this, 'register_acf_fields' ), 10 );
 	}
