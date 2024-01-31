@@ -6,7 +6,7 @@ namespace HRPDEV\WpLiveEventEnhancer\Admin;
 defined( 'ABSPATH' ) || exit;
 
 
-class SettingsManager {
+class LiveEventsSettingsManager {
 
 	public function init(): void {
 		add_action( 'admin_init', array( $this, 'register_settings' ) );

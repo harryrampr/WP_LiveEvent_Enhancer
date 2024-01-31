@@ -8,8 +8,70 @@ defined( 'ABSPATH' ) || exit;
 class NextEventsManager {
 
 	public function init(): void {
-		add_action( 'init', array( $this, 'register_next_events_post_type' ), 20 );
-		add_action( 'acf/init', array( $this, 'register_acf_fields' ), 20 );
+		add_action( 'admin_init', array( $this, 'install_acf_plugin' ), 20 );
+		add_action( 'admin_init', array( $this, 'check_acf_activation' ), 30 );
+		add_action( 'init', array( $this, 'register_next_events_post_type' ), 10 );
+		add_action( 'acf/init', array( $this, 'register_acf_fields' ), 10 );
+	}
+
+	public function install_acf_plugin(): void {
+		if ( ! is_plugin_active( 'advanced-custom-fields/acf.php' ) && ! file_exists( WP_PLUGIN_DIR . '/advanced-custom-fields/acf.php' ) ) {
+			include_once ABSPATH . 'wp-admin/includes/plugin-install.php';
+			include_once ABSPATH . 'wp-admin/includes/file.php';
+			include_once ABSPATH . 'wp-admin/includes/misc.php';
+			include_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+
+			$installed   = false;
+			$plugin_slug = 'advanced-custom-fields';
+			$api         = plugins_api( 'plugin_information', array(
+				'slug'   => $plugin_slug,
+				'fields' => array( 'sections' => false )
+			) );
+
+
+			if ( is_wp_error( $api ) ) {
+				$this->log_plugin_error( $api );
+			} else {
+				$upgrader  = new \Plugin_Upgrader( new \Automatic_Upgrader_Skin() );
+				$installed = $upgrader->install( $api->download_link );
+			}
+
+			if ( is_wp_error( $installed ) || ! $installed ) {
+				$this->log_plugin_error( $installed );
+				add_action( 'admin_notices', array( $this, 'failed_install_admin_notice__error' ) );
+				deactivate_plugins( plugin_basename( WP_LIVEEVENT_ENHANCER_FILE ) );
+				wp_redirect( admin_url( 'plugin-install.php?s=advanced+custom+fields&tab=search&type=term' ) );
+				exit;
+			}
+		}
+	}
+
+	private function log_plugin_error( $error ): void {
+		if ( is_wp_error( $error ) ) {
+			// Log the error message for debugging purposes
+			error_log( 'WP LiveEvent Enhancer - Plugin Installation Error: ' . $error->get_error_message() );
+		}
+	}
+
+	public function failed_install_admin_notice__error(): void {
+		$class   = 'notice notice-error';
+		$message = __( 'Failed to activate Advanced Custom Fields. Please install and activate it manually. Then try to install WP LiveEvent Enhancer again.', 'wp-liveevent-enhancer' );
+
+		printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), esc_html( $message ) );
+	}
+
+	public function check_acf_activation(): void {
+		if ( file_exists( WP_PLUGIN_DIR . '/advanced-custom-fields/acf.php' ) && ! is_plugin_active( 'advanced-custom-fields/acf.php' ) ) {
+
+			$activated = activate_plugin( 'advanced-custom-fields/acf.php' );
+
+			if ( is_wp_error( $activated ) ) {
+				add_action( 'admin_notices', array( $this, 'failed_install_admin_notice__error' ) );
+				deactivate_plugins( plugin_basename( WP_LIVEEVENT_ENHANCER_FILE ) );
+				wp_redirect( admin_url( 'plugin-install.php?s=advanced+custom+fields&tab=search&type=term' ) );
+				exit;
+			}
+		}
 	}
 
 	public function register_next_events_post_type(): void {

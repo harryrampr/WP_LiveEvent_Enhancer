@@ -2,7 +2,7 @@
 
 namespace HRPDEV\WpLiveEventEnhancer\Admin;
 
-class AdminMenuManager {
+class LiveEventsAdminMenuManager {
 	public function init(): void {
 		add_action( 'admin_menu', array( $this, 'add_admin_menus' ) );
 	}
